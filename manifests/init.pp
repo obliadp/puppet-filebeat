@@ -91,31 +91,30 @@ class filebeat (
   validate_bool($manage_repo, $prospectors_merge)
 
   if $major_version == undef and $::filebeat_version == undef {
-    $real_version = '5'
+    $real_version = 5
   } elsif $major_version == undef and versioncmp($::filebeat_version, '5.0.0') >= 0 {
-    $real_version = '5'
+    $real_version = 5
   } elsif $major_version == undef and versioncmp($::filebeat_version, '5.0.0') < 0 {
-    $real_version = '1'
+    $real_version = 1
   } else {
-    $real_version = $major_version
+    $real_version = 0 + $major_version
   }
 
   if $conf_template != undef {
     $real_conf_template = $conf_template
-  } elsif $real_version == '1' {
+  } elsif $real_version == 1 {
     if versioncmp('1.9.1', $::rubyversion) > 0 {
       $real_conf_template = "${module_name}/filebeat1.yml.ruby18.erb"
     } else {
       $real_conf_template = "${module_name}/filebeat1.yml.erb"
     }
-  } elsif $real_version == '5' {
+  } elsif $real_version == 5 {
     if $use_generic_template {
-      $real_conf_template = "${module_name}/filebeat1.yml.erb"
+      $real_conf_template = "${module_name}/filebeat5.yml.erb"
     } else {
       $real_conf_template = "${module_name}/filebeat5.yml.erb"
     }
   }
-
 
   if $prospectors_merge {
     $prospectors_final = hiera_hash('filebeat::prospectors', $prospectors)
